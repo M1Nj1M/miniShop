@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "orders")
-public class Orders {
+public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,8 +39,8 @@ public class Orders {
         if (this.status == null) this.status = OrderStatus.CREATED;
     }
 
-    public static Orders create(Long productId, int quantity) {
-        return Orders.builder()
+    public static Order create(Long productId, int quantity) {
+        return Order.builder()
                 .productId(productId)
                 .quantity(quantity)
                 .status(OrderStatus.CREATED)
