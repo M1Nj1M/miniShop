@@ -64,6 +64,21 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/deleted")
+    public ResponseEntity<List<ProductResponse>> getDeletedAll() {
+        List<ProductResponse> list = productService.getDeletedAll().stream()
+                .map(ProductResponse::from)
+                .toList();
+        return ResponseEntity.ok(list);
+    }
+
+    @PostMapping("/{productId}/restore")
+    public ResponseEntity<Void> restore(@PathVariable Long productId) {
+        productService.restore(productId);
+        return ResponseEntity.noContent().build();
+    }
+
+
     // ===================== DTO =====================
 
     public record CreateProductRequest(

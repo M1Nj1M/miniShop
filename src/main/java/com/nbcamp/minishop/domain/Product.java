@@ -68,4 +68,9 @@ public class Product {
         if (qty <= 0) throw new IllegalArgumentException("quantity must be positive");
         this.stock += qty;
     }
+
+    public void restore() {
+        this.deleted = false;
+    }
+
 }

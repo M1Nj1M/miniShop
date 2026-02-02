@@ -14,6 +14,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // 삭제되지 않은 상품 단건
     Optional<Product> findByProductIdAndDeletedFalse(Long productId);
 
-    // 상품명으로 검색(필요하면)
+    // 상품명으로 검색
     List<Product> findByNameContainingAndDeletedFalse(String keyword);
+
+    // 삭제된 상품 조회
+    List<Product> findAllByDeletedTrue();
 }

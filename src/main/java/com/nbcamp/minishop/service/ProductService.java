@@ -88,4 +88,17 @@ public class ProductService {
         Product product = get(productId);
         product.increaseStock(quantity);
     }
+
+    @Transactional(readOnly = true)
+    public List<Product> getDeletedAll() {
+        return productRepository.findAllByDeletedTrue();
+    }
+
+    @Transactional
+    public void restore(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found: " + productId));
+        product.restore();
+    }
+
 }
