@@ -1,8 +1,8 @@
 package com.nbcamp.minishop.controller;
 
 import com.nbcamp.minishop.domain.Order;
-import com.nbcamp.minishop.domain.OrderStatus;
 import com.nbcamp.minishop.service.OrderService;
+import com.nbcamp.minishop.dto.order.OrderResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -47,7 +47,6 @@ public class OrderController {
 
     /**
      * 주문 취소: status -> CANCELED
-     * (서비스에서 재고 복구까지 하는 버전 기준)
      */
     @PostMapping("/{orderId}/cancel")
     public ResponseEntity<OrderResponse> cancel(@PathVariable Long orderId) {
@@ -62,21 +61,4 @@ public class OrderController {
             @Min(1) int quantity
     ) {}
 
-    public record OrderResponse(
-            Long orderId,
-            Long productId,
-            int quantity,
-            OrderStatus status,
-            LocalDateTime createdAt
-    ) {
-        public static OrderResponse from(Order o) {
-            return new OrderResponse(
-                    o.getOrderId(),
-                    o.getProductId(),
-                    o.getQuantity(),
-                    o.getStatus(),
-                    o.getCreatedAt()
-            );
-        }
-    }
 }

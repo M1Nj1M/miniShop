@@ -2,7 +2,9 @@ package com.nbcamp.minishop.service;
 
 import com.nbcamp.minishop.domain.Order;
 import com.nbcamp.minishop.domain.OrderStatus;
+import com.nbcamp.minishop.domain.Product;
 import com.nbcamp.minishop.repository.OrderRepository;
+import com.nbcamp.minishop.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,19 +18,8 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
     private final ProductService productService;
-
-    @Transactional
-    public Order create(Long productId, int quantity) {
-        if (quantity <= 0) throw new IllegalArgumentException("quantity must be positive");
-
-        // 재고 차감 + 상품 존재/삭제 여부 검증
-        productService.decreaseStock(productId, quantity);
-
-        // new Order() 금지 -> Order.create() 사용
-        Order order = Order.create(productId, quantity);
-        return orderRepository.save(order);
-    }
 
     public Order get(Long orderId) {
         return orderRepository.findById(orderId)
@@ -40,17 +31,34 @@ public class OrderService {
     }
 
     @Transactional
+    public Order create(Long productId, int quantity) {
+        // 재고 원자성 -> 락 걸고 조회
+        Product product = productRepository.findByIdForUpdate(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
+
+        // 재고 차감 (재고 부족하면 예외)
+        product.decreaseStock(quantity);
+
+        // 주문 생성
+        Order order = Order.create(product, quantity);
+        return orderRepository.save(order);
+    }
+
+    @Transactional
     public Order cancel(Long orderId) {
         Order order = get(orderId);
 
-        // 이미 취소면 그대로 반환
         if (order.getStatus() == OrderStatus.CANCELED) return order;
 
-        // Setter 대신 도메인 메서드
+        // 취소 처리
         order.cancel();
 
-        // 취소 시 재고 복구를 원하면 복구(선택)
-        productService.increaseStock(order.getProductId(), order.getQuantity());
+        // 재고 복구 원자적으로 처리 -> 같은 상품 row 락
+        Long productId = order.getProduct().getProductId(); // 선택지 A 기준
+        Product product = productRepository.findByIdForUpdate(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
+
+        product.increaseStock(order.getQuantity());
 
         return order;
     }

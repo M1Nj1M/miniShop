@@ -8,5 +8,5 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
     // 특정 상품의 주문 목록
-    List<Order> findAllByProductId(Long productId);
+    List<Order> findAllByProduct_ProductId(Long productId);
 }

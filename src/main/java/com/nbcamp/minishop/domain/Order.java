@@ -5,12 +5,12 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "orders")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-@Entity
-@Table(name = "orders")
 public class Order {
 
     @Id
@@ -18,10 +18,10 @@ public class Order {
     @Column(name = "order_id")
     private Long orderId;
 
-    // FK 연관관계로 묶어도 되지만( @ManyToOne ),
-    // 지금 테이블이 product_id 컬럼만 있고 단순하니 일단 ID로만 들고 가는 게 가벼움.
-    @Column(name = "product_id", nullable = false)
-    private Long productId;
+    // 연관관계 추가 (orders.product_id FK 사용)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(nullable = false)
     private int quantity;
@@ -39,9 +39,10 @@ public class Order {
         if (this.status == null) this.status = OrderStatus.CREATED;
     }
 
-    public static Order create(Long productId, int quantity) {
+    // 생성 메서드 product 객체로 받기
+    public static Order create(Product product, int quantity) {
         return Order.builder()
-                .productId(productId)
+                .product(product)
                 .quantity(quantity)
                 .status(OrderStatus.CREATED)
                 .build();

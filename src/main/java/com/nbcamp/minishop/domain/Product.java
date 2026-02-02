@@ -59,14 +59,18 @@ public class Product {
         this.deleted = true;
     }
 
-    public void decreaseStock(int qty) {
-        if (qty <= 0) throw new IllegalArgumentException("quantity must be positive");
-        this.stock -= qty;
+    public void decreaseStock(int quantity) {
+        if (quantity <= 0) throw new IllegalArgumentException("quantity must be positive");
+
+        if (this.stock < quantity) {
+            throw new IllegalStateException("재고가 부족합니다. (stock=" + this.stock + ", qty=" + quantity + ")");
+        }
+        this.stock -= quantity;
     }
 
-    public void increaseStock(int qty) {
-        if (qty <= 0) throw new IllegalArgumentException("quantity must be positive");
-        this.stock += qty;
+    public void increaseStock(int quantity) {
+        if (quantity <= 0) throw new IllegalArgumentException("quantity must be positive");
+        this.stock += quantity;
     }
 
     public void restore() {
