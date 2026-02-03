@@ -4,6 +4,8 @@ import com.nbcamp.minishop.domain.Product;
 import com.nbcamp.minishop.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,10 +41,12 @@ public class ProductService {
     }
 
     public List<Product> getAll() {
-        // 간단 버전: 전체 조회 후 deleted 제외
-        return productRepository.findAll().stream()
-                .filter(p -> !p.isDeleted())
-                .toList();
+        return productRepository.findAllByDeletedFalse();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Product> getPage(Pageable pageable) {
+        return productRepository.findAllByDeletedFalse(pageable);
     }
 
     @Transactional
@@ -80,7 +84,7 @@ public class ProductService {
     }
 
     /**
-     * 주문 취소 시 재고 복구가 필요하면 사용
+     * 주문 취소 시 재고 복구
      */
     @Transactional
     public void increaseStock(Long productId, int quantity) {
@@ -100,5 +104,4 @@ public class ProductService {
                 .orElseThrow(() -> new EntityNotFoundException("Product not found: " + productId));
         product.restore();
     }
-
 }

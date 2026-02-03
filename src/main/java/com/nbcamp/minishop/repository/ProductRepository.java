@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,13 +15,9 @@ import java.util.Optional;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     // 삭제되지 않은 상품 목록
+    Page<Product> findAllByDeletedFalse(Pageable pageable);
+
     List<Product> findAllByDeletedFalse();
-
-    // 삭제되지 않은 상품 단건
-    Optional<Product> findByProductIdAndDeletedFalse(Long productId);
-
-    // 상품명으로 검색
-    List<Product> findByNameContainingAndDeletedFalse(String keyword);
 
     // 삭제된 상품 조회
     List<Product> findAllByDeletedTrue();

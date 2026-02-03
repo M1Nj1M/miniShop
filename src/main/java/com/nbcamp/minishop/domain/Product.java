@@ -41,7 +41,6 @@ public class Product {
         LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
-        if (!this.deleted) this.deleted = false;
     }
 
     @PreUpdate

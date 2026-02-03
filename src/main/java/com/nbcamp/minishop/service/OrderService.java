@@ -19,7 +19,6 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
-    private final ProductService productService;
 
     public Order get(Long orderId) {
         return orderRepository.findById(orderId)

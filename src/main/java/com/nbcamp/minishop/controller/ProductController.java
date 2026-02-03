@@ -6,6 +6,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +40,16 @@ public class ProductController {
     }
 
     @GetMapping
+    public ResponseEntity<Page<ProductResponse>> getPage(
+            @PageableDefault(page = 0, size = 10) Pageable pageable
+    ) {
+        Page<ProductResponse> page = productService.getPage(pageable)
+                .map(ProductResponse::from);
+        return ResponseEntity.ok(page);
+    }
+
+    // 기존 전체 조회는 경로만 분리해서 유지
+    @GetMapping("/all")
     public ResponseEntity<List<ProductResponse>> getAll() {
         List<ProductResponse> list = productService.getAll().stream()
                 .map(ProductResponse::from)
@@ -77,7 +90,6 @@ public class ProductController {
         productService.restore(productId);
         return ResponseEntity.noContent().build();
     }
-
 
     // ===================== DTO =====================
 

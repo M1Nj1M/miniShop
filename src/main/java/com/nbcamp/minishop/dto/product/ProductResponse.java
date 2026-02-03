@@ -19,7 +19,7 @@ public record ProductResponse(
                 p.getName(),
                 p.getPrice(),
                 p.getStock(),
-                p.isDeleted(),   // 엔티티 getter가 isDeleted() 형태일 가능성
+                p.isDeleted(),
                 p.getCreatedAt(),
                 p.getUpdatedAt()
         );

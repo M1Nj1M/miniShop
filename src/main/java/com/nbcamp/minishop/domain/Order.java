@@ -18,7 +18,7 @@ public class Order {
     @Column(name = "order_id")
     private Long orderId;
 
-    // 연관관계 추가 (orders.product_id FK 사용)
+    // 연관관계 추가
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
